@@ -1,0 +1,1235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Pine Bush Finance Academy Concession Stand</title>
+
+  <!-- iOS "Add to Home Screen" behavior -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="PBFA Concessions">
+  <link rel="apple-touch-icon" href="icon.png">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="icon.png">
+  <meta name="theme-color" content="#122559">
+
+  <style>
+    :root {
+      --navy: #122559;
+      --navy-dark: #0c1a40;
+      --navy-tint: #eef1f8;
+      --gold: #e6b93b;
+      --gold-dark: #c79a24;
+      --ink: #1f2430;
+      --muted: #6b7280;
+      --line: #e4e7ee;
+      --bg: #f5f6fa;
+      --card: #ffffff;
+      --danger: #c0392b;
+      --danger-tint: #fbe9e7;
+      --success: #1f8a4c;
+      --radius: 10px;
+    }
+
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+    html, body { height: 100%; }
+
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      padding-top: env(safe-area-inset-top);
+      padding-bottom: env(safe-area-inset-bottom);
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    header {
+      background: var(--navy);
+      border-top: 5px solid var(--gold);
+      padding: 18px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .brand-eyebrow { color: var(--gold); font-size: 11px; font-weight: 700; letter-spacing: .5px; margin-bottom: 3px; display: flex; align-items: center; gap: 8px; }
+    .offline-dot { width: 7px; height: 7px; border-radius: 50%; background: #9ca3af; display: inline-block; }
+    .offline-dot.ready { background: #4ade80; }
+    .offline-dot.error { background: #f87171; }
+    .brand-title { color: #ffffff; font-size: 19px; font-weight: 800; line-height: 1.25; }
+
+    .header-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+
+    .shift-bar {
+      display: flex; align-items: center; justify-content: space-between; gap: 12px;
+      background: #fffbf0; border-bottom: 2px solid #f0d78c; padding: 10px 24px; flex-wrap: wrap;
+    }
+    .shift-bar-info { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+    .shift-bar-label { font-size: 11px; font-weight: 700; color: var(--gold-dark); letter-spacing: .5px; }
+    .shift-bar-stats { font-size: 14.5px; font-weight: 800; color: var(--navy); }
+    .shift-bar-btn { font-size: 13px; padding: 8px 14px; background: #fff; }
+
+    .btn {
+      border: none; border-radius: 8px; padding: 10px 16px; font-size: 14px; font-weight: 600;
+      cursor: pointer; font-family: inherit; transition: transform .05s ease, opacity .15s ease;
+    }
+    .btn:active { transform: scale(0.97); }
+    .btn-ghost { background: rgba(255,255,255,0.08); color: #ffffff; border: 1px solid rgba(255,255,255,0.25); }
+    .btn-ghost:hover { background: rgba(255,255,255,0.16); }
+    .btn-gold { background: var(--gold); color: var(--navy-dark); }
+    .btn-gold:hover { background: var(--gold-dark); }
+    .btn-navy { background: var(--navy); color: #fff; }
+    .btn-navy:hover { background: var(--navy-dark); }
+    .btn-outline { background: transparent; border: 1.5px solid var(--line); color: var(--ink); }
+    .btn-outline:hover { border-color: var(--navy); }
+    .btn-danger { background: var(--danger-tint); color: var(--danger); }
+    .btn:disabled { opacity: .45; cursor: not-allowed; }
+    .btn-block { width: 100%; }
+
+    main { flex: 1 0 auto; display: grid; grid-template-columns: 1fr 340px; gap: 20px; padding: 20px; align-items: start; }
+    @media (max-width: 860px) {
+      main { grid-template-columns: 1fr; }
+      .order-panel { position: static; }
+    }
+
+    .section-title { font-size: 13px; font-weight: 700; color: var(--navy); margin: 4px 0 12px; }
+    .specials-title { color: var(--gold-dark); }
+
+    .item-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; }
+
+    .item-card {
+      position: relative; background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
+      padding: 16px 14px 14px; min-height: 92px; cursor: pointer; text-align: left;
+      display: flex; flex-direction: column; justify-content: space-between;
+      transition: border-color .12s ease, box-shadow .12s ease, transform .05s ease;
+    }
+    .item-card:hover { border-color: var(--navy); box-shadow: 0 2px 10px rgba(18,37,89,0.08); }
+    .item-card:active { transform: scale(0.98); }
+    .item-name { font-size: 14.5px; font-weight: 600; color: var(--ink); padding-right: 22px; word-break: break-word; }
+    .item-price { font-size: 15px; font-weight: 700; color: var(--navy); margin-top: 10px; }
+    .item-card.oos { background: #f4f4f6; cursor: not-allowed; opacity: 0.65; }
+    .item-card.oos .item-price { color: var(--muted); }
+
+    .item-card.special { background: #fffbf0; border: 1.5px solid #f0d78c; }
+    .item-card.special:hover { border-color: var(--gold-dark); }
+    .item-card.special .item-price { color: var(--gold-dark); }
+    .item-card.special.oos { background: #f4f4f6; border-color: var(--line); }
+    .item-card.special.oos .item-price { color: var(--muted); }
+
+    .oos-badge {
+      position: absolute; top: 10px; right: 10px; font-size: 9.5px; font-weight: 700; letter-spacing: .4px;
+      background: var(--danger); color: #fff; padding: 3px 6px; border-radius: 5px;
+    }
+    .oos-toggle {
+      position: absolute; bottom: 10px; right: 10px; font-size: 10px; font-weight: 700; letter-spacing: .3px;
+      background: transparent; border: 1px solid var(--line); color: var(--muted); padding: 4px 7px; border-radius: 6px; cursor: pointer;
+    }
+    .oos-toggle:hover { border-color: var(--danger); color: var(--danger); }
+    .item-card.oos .oos-toggle { border-color: var(--success); color: var(--success); }
+    .item-card.oos .oos-toggle:hover { background: var(--success); color: #fff; }
+
+    .order-panel { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 18px; position: sticky; top: 20px; }
+    .order-list { display: flex; flex-direction: column; gap: 10px; max-height: 40vh; overflow-y: auto; margin-bottom: 14px; }
+    .order-empty { color: var(--muted); font-size: 13.5px; text-align: center; padding: 30px 0; }
+    .order-line { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+    .order-line-name { font-size: 13.5px; font-weight: 600; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .qty-control { display: flex; align-items: center; gap: 6px; }
+    .qty-btn { width: 24px; height: 24px; border-radius: 6px; border: 1px solid var(--line); background: #fff; font-weight: 700; cursor: pointer; line-height: 1; font-size: 14px; }
+    .qty-val { font-size: 13px; font-weight: 600; min-width: 16px; text-align: center; }
+    .order-line-total { font-size: 13.5px; font-weight: 700; width: 56px; text-align: right; }
+    .order-totals { border-top: 1px solid var(--line); padding-top: 14px; }
+    .total-row { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 14px; }
+    .total-label { font-size: 13px; color: var(--muted); font-weight: 600; }
+    .total-value { font-size: 26px; font-weight: 800; color: var(--navy); }
+    .order-actions { display: flex; gap: 8px; }
+    .order-actions .btn { flex: 1; }
+
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(12,26,64,0.45); align-items: center; justify-content: center; padding: 16px; z-index: 50; }
+    .modal-overlay.open { display: flex; }
+    .modal { background: #fff; border-radius: 12px; width: 100%; max-width: 480px; max-height: 86vh; display: flex; flex-direction: column; overflow: hidden; }
+    .modal-header { padding: 18px 20px; background: var(--navy); border-top: 4px solid var(--gold); display: flex; align-items: center; justify-content: space-between; }
+    .modal-header h2 { margin: 0; font-size: 16px; color: #fff; font-weight: 700; }
+    .modal-close { background: transparent; border: none; color: #cfd6e6; font-size: 20px; cursor: pointer; line-height: 1; }
+    .modal-close:hover { color: #fff; }
+    .modal-body { padding: 18px 20px; overflow-y: auto; }
+    .modal-footer { padding: 14px 20px; border-top: 1px solid var(--line); display: flex; justify-content: flex-end; gap: 10px; flex-wrap: wrap; }
+    .modal-divider { border: none; border-top: 1px solid var(--line); margin: 24px 0; }
+
+    .field-label { font-size: 12px; font-weight: 700; color: var(--muted); letter-spacing: .3px; margin-bottom: 6px; display: block; }
+    input[type="text"], input[type="number"], input[type="email"] {
+      width: 100%; padding: 10px 12px; border: 1.5px solid var(--line); border-radius: 8px; font-size: 16px; font-family: inherit; margin-bottom: 12px;
+    }
+    input:focus { outline: none; border-color: var(--navy); }
+
+    .add-entry-card { display: flex; flex-direction: column; gap: 10px; background: var(--navy-tint); border-radius: 10px; padding: 14px; }
+    .add-entry-card input { margin-bottom: 0; }
+
+    .items-manage-list { display: flex; flex-direction: column; gap: 10px; margin-top: 16px; }
+    .manage-row { display: flex; flex-direction: column; gap: 10px; padding: 12px; border: 1.5px solid var(--line); border-radius: 10px; }
+    .manage-row-fields { display: flex; gap: 8px; }
+    .manage-row-fields input[type="text"] { flex: 2; margin-bottom: 0; }
+    .manage-row-fields input[type="number"] { flex: 1; margin-bottom: 0; }
+    .manage-row-meta { font-size: 11px; color: var(--muted); margin-top: -2px; }
+    .manage-row-actions { display: flex; gap: 8px; }
+    .manage-row-actions button {
+      flex: 1; padding: 11px 4px; border-radius: 8px; font-size: 12.5px; font-weight: 700;
+      cursor: pointer; border: 1.5px solid var(--line); background: #fff; color: var(--ink);
+      font-family: inherit;
+    }
+    .action-save { color: var(--navy); border-color: #c9d4ec; background: var(--navy-tint); }
+    .action-save:hover { background: #dfe6f6; }
+    .action-oos { color: var(--muted); }
+    .action-oos:hover { border-color: var(--danger); color: var(--danger); }
+    .action-oos.is-oos { color: var(--success); border-color: #bfe9d0; background: #eafaf0; }
+    .action-oos.is-oos:hover { background: #d9f5e5; }
+    .action-delete { color: var(--danger); }
+    .action-delete:hover { background: var(--danger-tint); border-color: var(--danger); }
+
+    @media (max-width: 480px) {
+      .manage-row-fields { flex-direction: column; }
+      .manage-row-actions { flex-wrap: wrap; }
+      .manage-row-actions button { flex: 1 1 30%; }
+    }
+
+    .email-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+    .email-chip { background: var(--navy-tint); color: var(--navy); font-size: 13px; font-weight: 600; padding: 6px 8px 6px 12px; border-radius: 20px; display: flex; align-items: center; gap: 6px; }
+    .email-chip button { background: transparent; border: none; color: var(--navy); cursor: pointer; font-size: 14px; line-height: 1; padding: 2px; }
+    .add-email-row { display: flex; gap: 8px; }
+    .add-email-row input { margin-bottom: 0; flex: 1; }
+
+    .summary-preview { background: var(--navy-tint); border-radius: 8px; padding: 12px 14px; margin-bottom: 16px; font-size: 13px; color: var(--navy); display: flex; justify-content: space-between; }
+    .checkbox-row { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); margin-top: 4px; }
+    .empty-note { font-size: 13px; color: var(--muted); text-align: center; padding: 12px 0; }
+
+    .note-box { background: var(--navy-tint); border-radius: 8px; padding: 12px 14px; font-size: 12.5px; color: var(--navy); line-height: 1.5; margin-bottom: 16px; }
+    .note-box.warn { background: #fdf7e8; color: #8a6d16; }
+
+    .action-with-info { display: flex; align-items: center; gap: 8px; }
+    .action-with-info .btn { flex: 1; }
+    .info-btn {
+      flex-shrink: 0; width: 30px; height: 30px; border-radius: 50%; border: 1.5px solid var(--line);
+      background: #fff; color: var(--muted); font-size: 13px; font-weight: 700; font-style: italic;
+      cursor: pointer; display: flex; align-items: center; justify-content: center; font-family: serif;
+    }
+    .info-btn:hover { border-color: var(--navy); color: var(--navy); }
+    .tip-bubble {
+      display: none; font-size: 12.5px; color: var(--navy); background: var(--navy-tint);
+      border-radius: 8px; padding: 10px 12px; margin-top: 8px; line-height: 1.5;
+    }
+    .tip-bubble.show { display: block; }
+
+    .change-modal { max-width: 420px; }
+    .change-total-row { display: flex; justify-content: space-between; align-items: baseline; background: var(--navy-tint); padding: 14px 16px; border-radius: 8px; margin-bottom: 18px; }
+    .change-total-label { font-size: 12px; font-weight: 700; color: var(--navy); letter-spacing: .4px; }
+    .change-total-value { font-size: 22px; font-weight: 800; color: var(--navy); }
+    .bill-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 12px; }
+    .bill-btn { padding: 16px 4px; border-radius: 8px; border: 1.5px solid var(--line); background: #fff; font-weight: 700; font-size: 16px; cursor: pointer; color: var(--ink); }
+    .bill-btn:hover { border-color: var(--navy); }
+    .bill-btn.selected { background: var(--navy); color: #fff; border-color: var(--navy); }
+    .bill-btn.exact { grid-column: span 4; background: var(--navy-tint); border-color: var(--navy-tint); color: var(--navy); font-size: 14px; }
+    .bill-btn.exact.selected { background: var(--navy); color: #fff; }
+    .change-result { margin-top: 18px; padding: 22px; border-radius: 10px; text-align: center; background: #f4f4f6; }
+    .change-result.ready { background: #eafaf0; }
+    .change-result.insufficient { background: var(--danger-tint); }
+    .change-result-label { font-size: 12px; font-weight: 700; letter-spacing: .4px; color: var(--muted); }
+    .change-result-value { font-size: 36px; font-weight: 800; color: var(--muted); margin-top: 6px; }
+    .change-result.ready .change-result-label { color: var(--success); }
+    .change-result.ready .change-result-value { color: var(--success); }
+    .change-result.insufficient .change-result-label { color: var(--danger); }
+    .change-result.insufficient .change-result-value { color: var(--danger); }
+
+    .toast {
+      position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: var(--navy); color: #fff;
+      padding: 12px 18px; border-radius: 8px; font-size: 13.5px; font-weight: 600; box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+      z-index: 100; opacity: 0; pointer-events: none; transition: opacity .2s ease;
+    }
+    .toast.show { opacity: 1; }
+    .toast.error { background: var(--danger); }
+    .toast.success { background: var(--success); }
+
+    .app-footer {
+      flex-shrink: 0;
+      text-align: center;
+      padding: 18px 20px;
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: .3px;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div>
+      <div class="brand-eyebrow"><span class="offline-dot" id="offlineDot"></span><span id="offlineStatus">CASH REGISTER · CHECKING OFFLINE MODE…</span></div>
+      <div class="brand-title">Pine Bush Finance Academy Concession Stand</div>
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-ghost" onclick="openItemsModal()">Edit Menu</button>
+      <button class="btn btn-gold" onclick="openEmailModal()">Send Summary</button>
+    </div>
+  </header>
+
+  <div class="shift-bar" id="shiftBar">
+    <div class="shift-bar-info">
+      <span class="shift-bar-label">CURRENT SHIFT</span>
+      <span class="shift-bar-stats" id="shiftBarStats">0 orders · $0.00</span>
+    </div>
+    <button class="btn btn-outline shift-bar-btn" onclick="startNewShift()">Start New Shift</button>
+  </div>
+
+  <main>
+    <section>
+      <div class="section-title specials-title">SPECIALS</div>
+      <div class="item-grid" id="specialsGrid"></div>
+
+      <div class="section-title" style="margin-top:26px;">MENU</div>
+      <div class="item-grid" id="itemGrid"></div>
+    </section>
+
+    <section class="order-panel">
+      <div class="section-title">CURRENT ORDER</div>
+      <div class="order-list" id="orderList">
+        <div class="order-empty">Tap an item to start an order</div>
+      </div>
+      <div class="order-totals">
+        <div class="total-row">
+          <span class="total-label">TOTAL</span>
+          <span class="total-value" id="orderTotal">$0.00</span>
+        </div>
+        <div class="order-actions">
+          <button class="btn btn-outline" id="clearBtn" onclick="clearOrder()" disabled>Clear</button>
+          <button class="btn btn-navy" id="checkoutBtn" onclick="checkout()" disabled>Checkout</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="app-footer">Pine Bush Finance Academy Concession Stand · Cash Register</footer>
+
+  <!-- Edit Menu Modal -->
+  <div class="modal-overlay" id="itemsModalOverlay">
+    <div class="modal">
+      <div class="modal-header">
+        <h2>Edit Menu</h2>
+        <button class="modal-close" onclick="closeItemsModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="add-entry-card">
+          <input type="text" id="newItemName" placeholder="Item name">
+          <input type="number" id="newItemPrice" placeholder="Price" step="0.01" min="0">
+          <button class="btn btn-navy btn-block" onclick="addNew('item')">+ Add Item</button>
+        </div>
+
+        <span class="field-label" style="margin-top:18px;display:block;">Existing items</span>
+        <div class="items-manage-list" id="manageList"></div>
+
+        <hr class="modal-divider">
+
+        <div class="add-entry-card">
+          <input type="text" id="newSpecialName" placeholder="Special name (e.g. Hot Dog + Soda Combo)">
+          <input type="number" id="newSpecialPrice" placeholder="Price" step="0.01" min="0">
+          <button class="btn btn-navy btn-block" onclick="addNew('special')">+ Add Special</button>
+        </div>
+
+        <span class="field-label" style="margin-top:18px;display:block;">Existing specials</span>
+        <div class="items-manage-list" id="manageSpecialsList"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" onclick="exportMenu()">Export Menu</button>
+        <button class="btn btn-outline" onclick="triggerImportMenu()">Import Menu</button>
+        <input type="file" id="importMenuInput" accept="application/json,.json" style="display:none;" onchange="importMenuFile(event)">
+        <button class="btn btn-outline" onclick="exportData()">Export Backup</button>
+        <button class="btn btn-outline" onclick="closeItemsModal()">Done</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Send Summary Modal -->
+  <div class="modal-overlay" id="emailModalOverlay">
+    <div class="modal">
+      <div class="modal-header">
+        <h2>Shift Summary</h2>
+        <button class="modal-close" onclick="closeEmailModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="summary-preview" id="summaryPreview">Loading summary…</div>
+
+        <span class="field-label">Send to</span>
+        <div class="email-chips" id="emailChips"></div>
+        <div class="add-email-row">
+          <input type="email" id="newEmailInput" placeholder="name@email.com">
+          <button class="btn btn-outline" onclick="addEmailChip()">Add</button>
+        </div>
+
+        <div class="action-with-info">
+          <button class="btn btn-gold btn-block" id="sendSummaryBtn" onclick="sendSummary()">Send Email</button>
+          <button class="info-btn" type="button" onclick="toggleTip(event, 'tipSendEmail')" aria-label="What does this do?">i</button>
+        </div>
+        <div class="tip-bubble" id="tipSendEmail">Opens your Mail app with the summary pre-filled. If you're offline it'll sit in your Outbox and send automatically once you're back online.</div>
+
+        <div class="action-with-info" style="margin-top:10px;">
+          <button class="btn btn-outline btn-block" onclick="exportOrderDetailsCsv()">Export Order Details (CSV)</button>
+          <button class="info-btn" type="button" onclick="toggleTip(event, 'tipExportCsv')" aria-label="What does this do?">i</button>
+        </div>
+        <div class="tip-bubble" id="tipExportCsv">Every order, itemized. Opens the Share Sheet — pick Mail to attach it to a new email, or Save to Files to keep a copy. A mailto link can't carry attachments, so this is a separate step from "Send Email" above.</div>
+
+        <hr class="modal-divider">
+
+        <div class="note-box warn">
+          Ready to reset for a new shift? Use the gold "Start New Shift" bar at the top of the screen — only after you've confirmed this email actually sent.
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" onclick="closeEmailModal()">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cash & Change Modal -->
+  <div class="modal-overlay" id="changeModalOverlay">
+    <div class="modal change-modal">
+      <div class="modal-header">
+        <h2>Cash &amp; Change</h2>
+        <button class="modal-close" onclick="backFromChangeModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="change-total-row">
+          <span class="change-total-label">ORDER TOTAL</span>
+          <span class="change-total-value" id="changeOrderTotal">$0.00</span>
+        </div>
+
+        <span class="field-label">Cash received</span>
+        <div class="bill-grid" id="billGrid"></div>
+        <input type="number" id="cashReceivedInput" placeholder="Or type an amount" step="0.01" min="0" oninput="onCashInputChange()" onkeydown="if(event.key==='Enter' && !document.getElementById('completeOrderBtn').disabled) completeOrder();">
+
+        <div class="change-result" id="changeResult">
+          <div class="change-result-label" id="changeResultLabel">CHANGE DUE</div>
+          <div class="change-result-value" id="changeResultValue">$0.00</div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" onclick="backFromChangeModal()">Back</button>
+        <button class="btn btn-navy" id="completeOrderBtn" onclick="completeOrder()" disabled>Complete Order</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // ============================================================
+    // STORAGE LAYER — everything lives in localStorage on this iPad
+    // ============================================================
+    var STORE_KEYS = {
+      items: 'pbfa_items',
+      specials: 'pbfa_specials',
+      orders: 'pbfa_orders',
+      orderItems: 'pbfa_orderItems',
+      settings: 'pbfa_settings'
+    };
+
+    var DEFAULT_ITEMS = [
+      { name: 'Water Bottle', price: 1.5, active: true },
+      { name: 'Soda', price: 2, active: true },
+      { name: 'Chips', price: 2, active: true },
+      { name: 'Candy Bar', price: 1.5, active: true },
+      { name: 'Hot Dog', price: 3.5, active: true },
+      { name: 'Nachos', price: 4, active: true },
+      { name: 'Popcorn', price: 2.5, active: true },
+      { name: 'Pretzel', price: 3, active: true }
+    ];
+    var DEFAULT_SPECIALS = [
+      { name: 'Hot Dog + Soda Combo', price: 4, active: true }
+    ];
+
+    function loadStore(key, fallback) {
+      try {
+        var raw = localStorage.getItem(key);
+        return raw ? JSON.parse(raw) : fallback;
+      } catch (e) {
+        return fallback;
+      }
+    }
+    function saveStore(key, value) {
+      localStorage.setItem(key, JSON.stringify(value));
+    }
+
+    // Seed on first run only
+    if (localStorage.getItem(STORE_KEYS.items) === null) {
+      saveStore(STORE_KEYS.items, DEFAULT_ITEMS.map(function (d) { return Object.assign({}, d, { updatedAt: new Date().toISOString() }); }));
+    }
+    if (localStorage.getItem(STORE_KEYS.specials) === null) {
+      saveStore(STORE_KEYS.specials, DEFAULT_SPECIALS.map(function (d) { return Object.assign({}, d, { updatedAt: new Date().toISOString() }); }));
+    }
+    if (localStorage.getItem(STORE_KEYS.orders) === null) saveStore(STORE_KEYS.orders, []);
+    if (localStorage.getItem(STORE_KEYS.orderItems) === null) saveStore(STORE_KEYS.orderItems, []);
+    if (localStorage.getItem(STORE_KEYS.settings) === null) saveStore(STORE_KEYS.settings, { lastEmails: [] });
+
+    // ============================================================
+    // APP STATE
+    // ============================================================
+    var items = loadStore(STORE_KEYS.items, []).map(function (d) { d.kind = 'item'; return d; });
+    var specials = loadStore(STORE_KEYS.specials, []).map(function (d) { d.kind = 'special'; return d; });
+    var order = [];
+    var emailList = [];
+
+    var KIND_CONFIG = {
+      item: { storeKey: STORE_KEYS.items, gridId: 'itemGrid', manageListId: 'manageList', nameInputId: 'newItemName', priceInputId: 'newItemPrice', label: 'Item' },
+      special: { storeKey: STORE_KEYS.specials, gridId: 'specialsGrid', manageListId: 'manageSpecialsList', nameInputId: 'newSpecialName', priceInputId: 'newSpecialPrice', label: 'Special' }
+    };
+
+    function showToast(msg, type) {
+      var t = document.getElementById('toast');
+      t.textContent = msg;
+      t.className = 'toast show' + (type ? ' ' + type : '');
+      setTimeout(function () { t.className = 'toast'; }, 2600);
+    }
+
+    function money(n) { return '$' + Number(n).toFixed(2); }
+
+    function getEntries(kind) { return kind === 'item' ? items : specials; }
+    function setEntries(kind, list) {
+      if (kind === 'item') items = list; else specials = list;
+      saveStore(KIND_CONFIG[kind].storeKey, list.map(function (e) { return { name: e.name, price: e.price, active: e.active, updatedAt: e.updatedAt || null }; }));
+    }
+
+    // ---------- Grids (Menu + Specials) ----------
+
+    function renderGrid(kind) {
+      var cfg = KIND_CONFIG[kind];
+      var grid = document.getElementById(cfg.gridId);
+      var entries = getEntries(kind);
+      grid.innerHTML = '';
+      if (!entries.length) {
+        grid.innerHTML = '<div class="empty-note">' + (kind === 'special' ? 'No specials set up yet — add one from Edit Menu.' : 'No items yet.') + '</div>';
+        return;
+      }
+      entries.forEach(function (entry) { grid.appendChild(buildCard(entry)); });
+    }
+
+    function buildCard(entry) {
+      var card = document.createElement('div');
+      card.className = 'item-card' + (entry.active ? '' : ' oos') + (entry.kind === 'special' ? ' special' : '');
+      card.onclick = function () { if (entry.active) addToOrder(entry); };
+
+      var name = document.createElement('div');
+      name.className = 'item-name';
+      name.textContent = entry.name;
+
+      var price = document.createElement('div');
+      price.className = 'item-price';
+      price.textContent = money(entry.price);
+
+      card.appendChild(name);
+      card.appendChild(price);
+
+      if (!entry.active) {
+        var badge = document.createElement('div');
+        badge.className = 'oos-badge';
+        badge.textContent = 'OUT OF STOCK';
+        card.appendChild(badge);
+      }
+
+      var toggle = document.createElement('button');
+      toggle.className = 'oos-toggle';
+      toggle.textContent = entry.active ? 'Mark OOS' : 'Restock';
+      toggle.onclick = function (e) { e.stopPropagation(); toggleActive(entry); };
+      card.appendChild(toggle);
+
+      return card;
+    }
+
+    function toggleActive(entry) {
+      entry.active = !entry.active;
+      entry.updatedAt = new Date().toISOString();
+      setEntries(entry.kind, getEntries(entry.kind));
+      renderGrid(entry.kind);
+      renderManageList(entry.kind);
+    }
+
+    // ---------- Order ----------
+
+    function addToOrder(entry) {
+      var line = order.find(function (l) { return l.name === entry.name; });
+      if (line) { line.qty += 1; } else { order.push({ name: entry.name, price: entry.price, qty: 1 }); }
+      renderOrder();
+    }
+
+    function changeQty(name, delta) {
+      var line = order.find(function (l) { return l.name === name; });
+      if (!line) return;
+      line.qty += delta;
+      if (line.qty <= 0) { order = order.filter(function (l) { return l.name !== name; }); }
+      renderOrder();
+    }
+
+    function clearOrder() { order = []; renderOrder(); }
+
+    function renderOrder() {
+      var list = document.getElementById('orderList');
+      var totalEl = document.getElementById('orderTotal');
+      var checkoutBtn = document.getElementById('checkoutBtn');
+      var clearBtn = document.getElementById('clearBtn');
+
+      list.innerHTML = '';
+
+      if (!order.length) {
+        list.innerHTML = '<div class="order-empty">Tap an item to start an order</div>';
+        checkoutBtn.disabled = true;
+        clearBtn.disabled = true;
+        totalEl.textContent = money(0);
+        return;
+      }
+
+      var total = 0;
+      order.forEach(function (line) {
+        var lineTotal = line.price * line.qty;
+        total += lineTotal;
+
+        var row = document.createElement('div');
+        row.className = 'order-line';
+
+        var nameEl = document.createElement('div');
+        nameEl.className = 'order-line-name';
+        nameEl.textContent = line.name;
+
+        var qtyControl = document.createElement('div');
+        qtyControl.className = 'qty-control';
+
+        var minusBtn = document.createElement('button');
+        minusBtn.className = 'qty-btn';
+        minusBtn.textContent = '−';
+        minusBtn.onclick = function () { changeQty(line.name, -1); };
+
+        var qtyVal = document.createElement('div');
+        qtyVal.className = 'qty-val';
+        qtyVal.textContent = line.qty;
+
+        var plusBtn = document.createElement('button');
+        plusBtn.className = 'qty-btn';
+        plusBtn.textContent = '+';
+        plusBtn.onclick = function () { changeQty(line.name, 1); };
+
+        qtyControl.appendChild(minusBtn);
+        qtyControl.appendChild(qtyVal);
+        qtyControl.appendChild(plusBtn);
+
+        var lineTotalEl = document.createElement('div');
+        lineTotalEl.className = 'order-line-total';
+        lineTotalEl.textContent = money(lineTotal);
+
+        row.appendChild(nameEl);
+        row.appendChild(qtyControl);
+        row.appendChild(lineTotalEl);
+        list.appendChild(row);
+      });
+
+      totalEl.textContent = money(total);
+      checkoutBtn.disabled = false;
+      clearBtn.disabled = false;
+    }
+
+    function checkout() {
+      if (!order.length) return;
+      openChangeModal();
+    }
+
+    // ---------- Cash & Change modal ----------
+
+    var billOptions = [1, 5, 10, 20, 50, 100];
+    var changeModalTotal = 0;
+
+    function openChangeModal() {
+      changeModalTotal = order.reduce(function (sum, l) { return sum + l.price * l.qty; }, 0);
+      document.getElementById('changeOrderTotal').textContent = money(changeModalTotal);
+      document.getElementById('cashReceivedInput').value = '';
+      renderBillGrid();
+      updateChangeResult(0);
+      document.getElementById('completeOrderBtn').textContent = 'Complete Order';
+      document.getElementById('changeModalOverlay').classList.add('open');
+      document.getElementById('cashReceivedInput').focus();
+    }
+
+    function renderBillGrid() {
+      var grid = document.getElementById('billGrid');
+      grid.innerHTML = '';
+      billOptions.forEach(function (bill) {
+        var btn = document.createElement('button');
+        btn.className = 'bill-btn';
+        btn.textContent = '$' + bill;
+        btn.onclick = function () { selectCashAmount(bill, btn); };
+        grid.appendChild(btn);
+      });
+      var exactBtn = document.createElement('button');
+      exactBtn.className = 'bill-btn exact';
+      exactBtn.textContent = 'Exact Cash — ' + money(changeModalTotal);
+      exactBtn.onclick = function () { selectCashAmount(changeModalTotal, exactBtn); };
+      grid.appendChild(exactBtn);
+    }
+
+    function selectCashAmount(amount, btnEl) {
+      document.querySelectorAll('.bill-btn').forEach(function (b) { b.classList.remove('selected'); });
+      btnEl.classList.add('selected');
+      document.getElementById('cashReceivedInput').value = amount;
+      updateChangeResult(amount);
+    }
+
+    function onCashInputChange() {
+      document.querySelectorAll('.bill-btn').forEach(function (b) { b.classList.remove('selected'); });
+      var cash = parseFloat(document.getElementById('cashReceivedInput').value) || 0;
+      updateChangeResult(cash);
+    }
+
+    function updateChangeResult(cash) {
+      var resultBox = document.getElementById('changeResult');
+      var resultLabel = document.getElementById('changeResultLabel');
+      var resultVal = document.getElementById('changeResultValue');
+      var completeBtn = document.getElementById('completeOrderBtn');
+      var change = cash - changeModalTotal;
+
+      if (!cash) {
+        resultBox.className = 'change-result';
+        resultLabel.textContent = 'CHANGE DUE';
+        resultVal.textContent = money(0);
+        completeBtn.disabled = true;
+        return;
+      }
+
+      if (change < -0.001) {
+        resultBox.className = 'change-result insufficient';
+        resultLabel.textContent = 'NOT ENOUGH CASH';
+        resultVal.textContent = money(Math.abs(change)) + ' short';
+        completeBtn.disabled = true;
+      } else {
+        resultBox.className = 'change-result ready';
+        resultLabel.textContent = 'CHANGE DUE';
+        resultVal.textContent = money(Math.max(change, 0));
+        completeBtn.disabled = false;
+      }
+    }
+
+    function backFromChangeModal() {
+      document.getElementById('changeModalOverlay').classList.remove('open');
+    }
+
+    function completeOrder() {
+      var completeBtn = document.getElementById('completeOrderBtn');
+      completeBtn.disabled = true;
+      completeBtn.textContent = 'Completing…';
+
+      var orders = loadStore(STORE_KEYS.orders, []);
+      var orderItems = loadStore(STORE_KEYS.orderItems, []);
+      var orderId = 'o' + Date.now() + '_' + Math.floor(Math.random() * 10000);
+
+      orders.push({ orderId: orderId, timestamp: new Date().toISOString(), total: changeModalTotal });
+      order.forEach(function (li) {
+        orderItems.push({ orderId: orderId, itemName: li.name, qty: li.qty, price: li.price, lineTotal: li.qty * li.price });
+      });
+
+      saveStore(STORE_KEYS.orders, orders);
+      saveStore(STORE_KEYS.orderItems, orderItems);
+
+      showToast('Order logged — ' + money(changeModalTotal), 'success');
+      document.getElementById('changeModalOverlay').classList.remove('open');
+      completeBtn.textContent = 'Complete Order';
+      clearOrder();
+      updateShiftBar();
+    }
+
+    // ---------- Edit Menu modal (Items + Specials) ----------
+
+    function openItemsModal() {
+      renderManageList('item');
+      renderManageList('special');
+      document.getElementById('itemsModalOverlay').classList.add('open');
+    }
+    function closeItemsModal() { document.getElementById('itemsModalOverlay').classList.remove('open'); }
+
+    function renderManageList(kind) {
+      var cfg = KIND_CONFIG[kind];
+      var list = document.getElementById(cfg.manageListId);
+      var entries = getEntries(kind);
+      list.innerHTML = '';
+      if (!entries.length) {
+        list.innerHTML = '<div class="empty-note">No ' + cfg.label.toLowerCase() + 's yet — add one above.</div>';
+        return;
+      }
+      entries.forEach(function (entry) { list.appendChild(buildManageRow(entry)); });
+    }
+
+    function buildManageRow(entry) {
+      var row = document.createElement('div');
+      row.className = 'manage-row';
+
+      var fields = document.createElement('div');
+      fields.className = 'manage-row-fields';
+
+      var nameInput = document.createElement('input');
+      nameInput.type = 'text';
+      nameInput.value = entry.name;
+
+      var priceInput = document.createElement('input');
+      priceInput.type = 'number';
+      priceInput.step = '0.01';
+      priceInput.min = '0';
+      priceInput.value = entry.price;
+
+      fields.appendChild(nameInput);
+      fields.appendChild(priceInput);
+
+      row.appendChild(fields);
+
+      if (entry.updatedAt) {
+        var meta = document.createElement('div');
+        meta.className = 'manage-row-meta';
+        meta.textContent = 'Updated ' + formatUpdatedAt(entry.updatedAt);
+        row.appendChild(meta);
+      }
+
+      var actions = document.createElement('div');
+      actions.className = 'manage-row-actions';
+
+      var saveBtn = document.createElement('button');
+      saveBtn.className = 'action-save';
+      saveBtn.textContent = '💾 Save';
+      saveBtn.onclick = function () { saveExisting(entry, nameInput.value, priceInput.value); };
+
+      var oosBtn = document.createElement('button');
+      oosBtn.className = 'action-oos' + (entry.active ? '' : ' is-oos');
+      oosBtn.textContent = entry.active ? '🚫 Mark OOS' : '✅ Restock';
+      oosBtn.onclick = function () { toggleActive(entry); };
+
+      var deleteBtn = document.createElement('button');
+      deleteBtn.className = 'action-delete';
+      deleteBtn.textContent = '🗑 Delete';
+      deleteBtn.onclick = function () { deleteExisting(entry); };
+
+      actions.appendChild(saveBtn);
+      actions.appendChild(oosBtn);
+      actions.appendChild(deleteBtn);
+
+      row.appendChild(actions);
+      return row;
+    }
+
+    function formatUpdatedAt(iso) {
+      try {
+        var d = new Date(iso);
+        return d.toLocaleString(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+      } catch (e) {
+        return '';
+      }
+    }
+
+    function nameTaken(kind, name, exceptName) {
+      return getEntries(kind).some(function (e) { return e.name === name && e.name !== exceptName; });
+    }
+
+    function addNew(kind) {
+      var cfg = KIND_CONFIG[kind];
+      var nameEl = document.getElementById(cfg.nameInputId);
+      var priceEl = document.getElementById(cfg.priceInputId);
+      var name = nameEl.value.trim();
+      var price = parseFloat(priceEl.value);
+
+      if (!name || priceEl.value === '' || isNaN(price) || price < 0) {
+        showToast('Enter a name and valid price.', 'error');
+        return;
+      }
+      if (nameTaken(kind, name)) {
+        showToast('An entry with that name already exists.', 'error');
+        return;
+      }
+
+      var list = getEntries(kind);
+      list.push({ name: name, price: price, active: true, kind: kind, updatedAt: new Date().toISOString() });
+      setEntries(kind, list);
+
+      nameEl.value = '';
+      priceEl.value = '';
+      showToast(cfg.label + ' added.', 'success');
+      renderGrid(kind);
+      renderManageList(kind);
+    }
+
+    function saveExisting(entry, newName, newPrice) {
+      var cfg = KIND_CONFIG[entry.kind];
+      var name = newName.trim();
+      var price = parseFloat(newPrice);
+
+      if (!name || newPrice === '' || isNaN(price) || price < 0) {
+        showToast('Enter a name and valid price.', 'error');
+        return;
+      }
+      if (nameTaken(entry.kind, name, entry.name)) {
+        showToast('Another entry already has that name.', 'error');
+        return;
+      }
+
+      entry.name = name;
+      entry.price = price;
+      entry.updatedAt = new Date().toISOString();
+      setEntries(entry.kind, getEntries(entry.kind));
+
+      showToast(cfg.label + ' updated.', 'success');
+      renderGrid(entry.kind);
+      renderManageList(entry.kind);
+    }
+
+    function deleteExisting(entry) {
+      if (!confirm('Delete "' + entry.name + '"? This cannot be undone.')) return;
+      var cfg = KIND_CONFIG[entry.kind];
+      var list = getEntries(entry.kind).filter(function (e) { return e.name !== entry.name; });
+      setEntries(entry.kind, list);
+      showToast(cfg.label + ' deleted.', 'success');
+      renderGrid(entry.kind);
+      renderManageList(entry.kind);
+    }
+
+    // ---------- Summary ----------
+
+    function getSummary() {
+      var orders = loadStore(STORE_KEYS.orders, []);
+      var orderItems = loadStore(STORE_KEYS.orderItems, []);
+
+      var totalCash = 0;
+      orders.forEach(function (o) { totalCash += Number(o.total) || 0; });
+      var totalOrders = orders.length;
+
+      var itemTotals = {};
+      var order2 = [];
+      orderItems.forEach(function (row) {
+        if (!itemTotals[row.itemName]) { itemTotals[row.itemName] = { qty: 0, revenue: 0 }; order2.push(row.itemName); }
+        itemTotals[row.itemName].qty += Number(row.qty) || 0;
+        itemTotals[row.itemName].revenue += Number(row.lineTotal) || 0;
+      });
+
+      var itemsList = order2.map(function (name) {
+        return { name: name, qty: itemTotals[name].qty, revenue: itemTotals[name].revenue };
+      }).sort(function (a, b) { return b.revenue - a.revenue; });
+
+      return { totalCash: totalCash, totalOrders: totalOrders, items: itemsList };
+    }
+
+    function updateShiftBar() {
+      var summary = getSummary();
+      var label = summary.totalOrders === 1 ? '1 order' : summary.totalOrders + ' orders';
+      document.getElementById('shiftBarStats').textContent = label + ' · ' + money(summary.totalCash);
+    }
+
+    // ---------- Send Summary modal ----------
+
+    function openEmailModal() {
+      var summary = getSummary();
+      var preview = document.getElementById('summaryPreview');
+      preview.innerHTML = '<span>' + summary.totalOrders + ' orders</span><span>' + money(summary.totalCash) + ' total</span>';
+
+      var settings = loadStore(STORE_KEYS.settings, { lastEmails: [] });
+      emailList = settings.lastEmails || [];
+      renderEmailChips();
+
+      document.getElementById('emailModalOverlay').classList.add('open');
+    }
+    function closeEmailModal() { document.getElementById('emailModalOverlay').classList.remove('open'); }
+
+    function renderEmailChips() {
+      var wrap = document.getElementById('emailChips');
+      wrap.innerHTML = '';
+      if (!emailList.length) {
+        wrap.innerHTML = '<div class="empty-note" style="padding:4px 0;">No recipients yet — add one below.</div>';
+        return;
+      }
+      emailList.forEach(function (email) {
+        var chip = document.createElement('div');
+        chip.className = 'email-chip';
+        var span = document.createElement('span');
+        span.textContent = email;
+        var removeBtn = document.createElement('button');
+        removeBtn.textContent = '\u00d7';
+        removeBtn.onclick = function () {
+          emailList = emailList.filter(function (e) { return e !== email; });
+          renderEmailChips();
+        };
+        chip.appendChild(span);
+        chip.appendChild(removeBtn);
+        wrap.appendChild(chip);
+      });
+    }
+
+    function addEmailChip() {
+      var input = document.getElementById('newEmailInput');
+      var email = input.value.trim();
+      if (!email) return;
+      if (!/^\S+@\S+\.\S+$/.test(email)) { showToast('That doesn\'t look like a valid email.', 'error'); return; }
+      if (emailList.indexOf(email) === -1) { emailList.push(email); renderEmailChips(); }
+      input.value = '';
+    }
+
+    function buildSummaryText(summary) {
+      var dateStr = new Date().toLocaleDateString();
+      var lines = [];
+      lines.push('PINE BUSH FINANCE ACADEMY CONCESSION STAND');
+      lines.push('Cash Summary — ' + dateStr);
+      lines.push('');
+      lines.push('Total Cash: ' + money(summary.totalCash));
+      lines.push('Total Orders: ' + summary.totalOrders);
+      lines.push('');
+      lines.push('ITEMS SOLD');
+      if (!summary.items.length) {
+        lines.push('(none)');
+      } else {
+        summary.items.forEach(function (it) {
+          lines.push('- ' + it.name + '  x' + it.qty + '  ' + money(it.revenue));
+        });
+      }
+      return lines.join('\n');
+    }
+
+    function sendSummary() {
+      var summary = getSummary();
+      if (summary.totalOrders === 0) { showToast('No orders logged yet — nothing to send.', 'error'); return; }
+      if (!emailList.length) { showToast('Add at least one recipient.', 'error'); return; }
+
+      var settings = loadStore(STORE_KEYS.settings, { lastEmails: [] });
+      settings.lastEmails = emailList;
+      saveStore(STORE_KEYS.settings, settings);
+
+      var subject = 'Pine Bush Finance Academy Concession Stand — Cash Summary (' + new Date().toLocaleDateString() + ')';
+      var body = buildSummaryText(summary);
+      var mailto = 'mailto:' + encodeURIComponent(emailList.join(',')) +
+        '?subject=' + encodeURIComponent(subject) +
+        '&body=' + encodeURIComponent(body);
+
+      window.location.href = mailto;
+    }
+
+    function startNewShift() {
+      if (!confirm('Clear today\'s orders and totals? This cannot be undone — make sure the summary email already sent.')) return;
+      saveStore(STORE_KEYS.orders, []);
+      saveStore(STORE_KEYS.orderItems, []);
+      showToast('New shift started — totals reset.', 'success');
+      updateShiftBar();
+      closeEmailModal();
+    }
+
+    // ---------- Export / Import ----------
+
+    function exportData() {
+      var payload = {
+        exportedAt: new Date().toISOString(),
+        items: loadStore(STORE_KEYS.items, []),
+        specials: loadStore(STORE_KEYS.specials, []),
+        orders: loadStore(STORE_KEYS.orders, []),
+        orderItems: loadStore(STORE_KEYS.orderItems, []),
+        settings: loadStore(STORE_KEYS.settings, {})
+      };
+      shareOrDownload(JSON.stringify(payload, null, 2), 'pbfa-concession-backup-' + Date.now() + '.json', 'PBFA Concession Backup', 'application/json');
+    }
+
+    function exportMenu() {
+      var payload = {
+        exportedAt: new Date().toISOString(),
+        items: loadStore(STORE_KEYS.items, []),
+        specials: loadStore(STORE_KEYS.specials, [])
+      };
+      shareOrDownload(JSON.stringify(payload, null, 2), 'pbfa-menu-' + Date.now() + '.json', 'PBFA Menu Setup', 'application/json');
+    }
+
+    function csvEscape(val) {
+      var s = String(val === undefined || val === null ? '' : val);
+      if (/[",\r\n]/.test(s)) { s = '"' + s.replace(/"/g, '""') + '"'; }
+      return s;
+    }
+
+    function buildOrdersCsv() {
+      var orders = loadStore(STORE_KEYS.orders, []).slice().sort(function (a, b) {
+        return new Date(a.timestamp) - new Date(b.timestamp);
+      });
+      var orderItems = loadStore(STORE_KEYS.orderItems, []);
+
+      var itemsByOrder = {};
+      orderItems.forEach(function (oi) {
+        if (!itemsByOrder[oi.orderId]) itemsByOrder[oi.orderId] = [];
+        itemsByOrder[oi.orderId].push(oi);
+      });
+
+      var rows = [['Order #', 'Date/Time', 'Item', 'Qty', 'Unit Price', 'Line Total', 'Order Total']];
+
+      orders.forEach(function (o, idx) {
+        var lines = itemsByOrder[o.orderId] || [];
+        var dateStr = new Date(o.timestamp).toLocaleString();
+        if (!lines.length) {
+          rows.push([idx + 1, dateStr, '(no items on record)', '', '', '', Number(o.total).toFixed(2)]);
+        } else {
+          lines.forEach(function (li, i) {
+            rows.push([
+              idx + 1,
+              i === 0 ? dateStr : '',
+              li.itemName,
+              li.qty,
+              Number(li.price).toFixed(2),
+              Number(li.lineTotal).toFixed(2),
+              i === 0 ? Number(o.total).toFixed(2) : ''
+            ]);
+          });
+        }
+      });
+
+      return rows.map(function (r) { return r.map(csvEscape).join(','); }).join('\r\n');
+    }
+
+    function exportOrderDetailsCsv() {
+      var orders = loadStore(STORE_KEYS.orders, []);
+      if (!orders.length) { showToast('No orders logged yet — nothing to export.', 'error'); return; }
+      var csv = buildOrdersCsv();
+      shareOrDownload(csv, 'pbfa-order-details-' + Date.now() + '.csv', 'PBFA Order Details', 'text/csv');
+    }
+
+    function triggerImportMenu() {
+      document.getElementById('importMenuInput').click();
+    }
+
+    function importMenuFile(event) {
+      var file = event.target.files && event.target.files[0];
+      if (!file) return;
+
+      var reader = new FileReader();
+      reader.onload = function () {
+        try {
+          var parsed = JSON.parse(reader.result);
+          if (!Array.isArray(parsed.items) || !Array.isArray(parsed.specials)) {
+            throw new Error('This file doesn\'t look like a menu export.');
+          }
+          if (!confirm('Replace this device\'s current menu with the imported one? This cannot be undone.')) {
+            event.target.value = '';
+            return;
+          }
+
+          var newItems = parsed.items.map(function (i) {
+            return { name: String(i.name || '').trim(), price: Number(i.price) || 0, active: i.active !== false, kind: 'item', updatedAt: i.updatedAt || new Date().toISOString() };
+          }).filter(function (i) { return i.name; });
+
+          var newSpecials = parsed.specials.map(function (i) {
+            return { name: String(i.name || '').trim(), price: Number(i.price) || 0, active: i.active !== false, kind: 'special', updatedAt: i.updatedAt || new Date().toISOString() };
+          }).filter(function (i) { return i.name; });
+
+          setEntries('item', newItems);
+          setEntries('special', newSpecials);
+          renderGrid('item');
+          renderGrid('special');
+          renderManageList('item');
+          renderManageList('special');
+          showToast('Menu imported — ' + newItems.length + ' items, ' + newSpecials.length + ' specials.', 'success');
+        } catch (e) {
+          showToast('Could not read that file: ' + e.message, 'error');
+        }
+        event.target.value = '';
+      };
+      reader.readAsText(file);
+    }
+
+    function shareOrDownload(text, filename, shareTitle, mimeType) {
+      mimeType = mimeType || 'application/json';
+      if (navigator.share) {
+        try {
+          var file = new File([text], filename, { type: mimeType });
+          navigator.share({ files: [file], title: shareTitle }).catch(function () {
+            fallbackExport(text);
+          });
+          return;
+        } catch (e) {
+          fallbackExport(text);
+          return;
+        }
+      }
+      fallbackExport(text);
+    }
+
+    function fallbackExport(text) {
+      var win = window.open('', '_blank');
+      if (!win) { showToast('Allow pop-ups to export, or copy from the Edit Menu screen.', 'error'); return; }
+      win.document.write('<pre style="white-space:pre-wrap;word-break:break-all;font-family:monospace;padding:16px;">' +
+        text.replace(/</g, '&lt;') + '</pre>' +
+        '<p style="font-family:sans-serif;color:#555;padding:0 16px;">Select all (tap and hold → Select All) and copy this, or use Share → Save to Files.</p>');
+    }
+
+    function toggleTip(event, id) {
+      event.stopPropagation();
+      var el = document.getElementById(id);
+      var isOpen = el.classList.contains('show');
+      document.querySelectorAll('.tip-bubble.show').forEach(function (b) { b.classList.remove('show'); });
+      if (!isOpen) el.classList.add('show');
+    }
+    document.addEventListener('click', function (e) {
+      if (!e.target.closest('.info-btn') && !e.target.closest('.tip-bubble')) {
+        document.querySelectorAll('.tip-bubble.show').forEach(function (b) { b.classList.remove('show'); });
+      }
+    });
+
+    // ---------- Init ----------
+    renderGrid('item');
+    renderGrid('special');
+    renderManageList('item');
+    renderManageList('special');
+    updateShiftBar();
+
+    // Register service worker for offline use, and report real status on screen
+    // (no computer/dev tools needed to see if offline mode is actually ready).
+    var CACHE_NAME_EXPECTED = 'pbfa-concession-v8';
+    var REQUIRED_ASSETS = ['./index.html', './manifest.json', './icon.png'];
+
+    function setOfflineStatus(state, text) {
+      var dot = document.getElementById('offlineDot');
+      var label = document.getElementById('offlineStatus');
+      dot.className = 'offline-dot' + (state ? ' ' + state : '');
+      label.textContent = text;
+    }
+
+    function checkCacheStatus() {
+      if (!('caches' in window)) {
+        setOfflineStatus('error', 'OFFLINE MODE NOT SUPPORTED IN THIS BROWSER');
+        return;
+      }
+      caches.open(CACHE_NAME_EXPECTED).then(function (cache) {
+        return Promise.all(REQUIRED_ASSETS.map(function (url) { return cache.match(url); }));
+      }).then(function (results) {
+        var allCached = results.every(function (r) { return !!r; });
+        if (allCached) {
+          setOfflineStatus('ready', 'CASH REGISTER · OFFLINE READY ✓');
+        } else {
+          setOfflineStatus('error', 'OFFLINE NOT READY — OPEN THIS PAGE ONCE MORE WITH WIFI ON');
+        }
+      }).catch(function () {
+        setOfflineStatus('error', 'OFFLINE NOT READY — OPEN THIS PAGE ONCE MORE WITH WIFI ON');
+      });
+    }
+
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function () {
+        navigator.serviceWorker.register('service-worker.js').then(function (reg) {
+          if (reg.installing) {
+            reg.installing.addEventListener('statechange', function (e) {
+              if (e.target.state === 'activated') { setTimeout(checkCacheStatus, 300); }
+            });
+          } else {
+            checkCacheStatus();
+          }
+        }).catch(function (err) {
+          console.error('[App] Service worker registration failed', err);
+          setOfflineStatus('error', 'OFFLINE MODE FAILED TO SET UP — SEE BELOW');
+        });
+      });
+    } else {
+      setOfflineStatus('error', 'OFFLINE MODE NOT SUPPORTED IN THIS BROWSER');
+    }
+  </script>
+</body>
+</html>
